@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Forecast</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="weather-layer clouds" id="clouds-layer" style="display:none"></div>
+    <div class="weather-layer rain" id="rain-layer" style="display:none"></div>
+    <div class="weather-layer snow" id="snow-layer" style="display:none"></div>
+    <div class="weather-layer mist" id="mist-layer" style="display:none"></div>
+    <div class="weather-layer lightning" id="lightning-layer" style="display:none">
+        <div class="lightning-flash" id="lightning-flash"></div>
+    </div>
+    <div id="app-container">
+        <h1 class="text-3xl font-bold mb-4">Weather Forecast</h1>
+        <div class="input-group">
+            <input type="text" id="city-input" placeholder="Enter city name">
+            <button id="search-button">Search</button>
+        </div>
+
+        <div id="loading-indicator">Loading weather data...</div>
+        <div id="error-message"></div>
+
+        <div id="weather-info">
+            <h2 id="location-name"></h2>
+            <p id="temperature"></p>
+            <p id="weather-description"></p>
+            <div class="details-grid">
+                <div class="detail-item">
+                    <span>Wind Speed</span>
+                    <strong id="wind-speed"></strong>
+                </div>
+                <div class="detail-item">
+                    <span>Wind Direction</span>
+                    <strong id="wind-direction"></strong>
+                </div>
+                <div class="detail-item">
+                    <span>Current Time</span>
+                    <strong id="current-time"></strong>
+                </div>
+                <div class="detail-item">
+                    <span>Day/Night</span>
+                    <strong id="day-night"></strong>
+                </div>
+            </div>
+        </div>
+
+        <div id="weekly-forecast">
+            <h3 class="forecast-title">Weekly Forecast</h3>
+            <div id="forecast-container"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
