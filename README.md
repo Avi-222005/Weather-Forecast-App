@@ -19,9 +19,9 @@ A modern, responsive weather application with real-time forecasts, air quality m
 
 - **Frontend**: Vanilla HTML, CSS, JavaScript
 - **APIs**:
-  - [Open-Meteo](https://open-meteo.com) - Weather & Air Quality
-  - [BigDataCloud](https://www.bigdatacloud.com) - Reverse Geocoding
-  - [GNews](https://gnews.io) - Weather News
+  - [Open-Meteo](https://open-meteo.com) - Weather & Air Quality (free, no key required)
+  - [BigDataCloud](https://www.bigdatacloud.com) - Reverse Geocoding (free, no key required)
+  - [GNews](https://gnews.io) - Weather News (**Note**: Free tier only works on localhost, not production domains)
 - **Backend**: [Supabase](https://supabase.com) (PostgreSQL, Auth, Row Level Security)
 - **Deployment**: [Vercel](https://vercel.com)
 

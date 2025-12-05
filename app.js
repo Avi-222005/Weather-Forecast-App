@@ -200,15 +200,7 @@ async function fetchWeatherNews(opts = {}) {
         if (!res.ok) {
             // Provide a clearer message for common auth failures and show placeholders
             if (res.status === 401 || res.status === 403) {
-                // Placeholder cards
-                const placeholders = Array.from({ length: 3 }).map(() => `
-                    <li class="news-item">
-                        <div style="height:14px;background:rgba(255,255,255,.18);border-radius:6px;width:80%;margin-bottom:8px;"></div>
-                        <div class="news-meta" style="height:12px;background:rgba(255,255,255,.12);border-radius:6px;width:50%;"></div>
-                    </li>
-                `).join('');
-                newsList.innerHTML = placeholders;
-                newsLoading.style.display = 'none';
+                showNewsFallback();
                 return;
             }
             throw new Error(`News fetch failed: HTTP ${res.status}`);
@@ -234,13 +226,33 @@ async function fetchWeatherNews(opts = {}) {
             newsList.innerHTML = items;
         }
     } catch (e) {
-        newsError.style.display = 'block';
-        newsError.textContent = e.message.includes('Failed to fetch')
-            ? 'Could not load news (network/CORS). Please try again later.'
-            : `Could not load news: ${e.message}`;
+        // CORS or network error - show fallback instead of error
+        if (e.message.includes('Failed to fetch') || e.message.includes('CORS')) {
+            showNewsFallback();
+        } else {
+            newsError.style.display = 'block';
+            newsError.textContent = `Could not load news: ${e.message}`;
+        }
     } finally {
         newsLoading.style.display = 'none';
     }
+}
+
+function showNewsFallback() {
+    // Show placeholder news when API is unavailable (CORS/auth issues on production)
+    newsError.style.display = 'none';
+    const fallbackNews = [
+        { title: 'Weather News Unavailable', desc: 'GNews API is not accessible from this domain. The free tier only works on localhost.' },
+        { title: 'Alternative: Use Local Development', desc: 'Run the app locally to see live weather news headlines.' },
+        { title: 'Upgrade Option', desc: 'Consider upgrading to GNews paid tier for production domain support.' }
+    ];
+    const items = fallbackNews.map(item => `
+        <li class="news-item">
+            <div style="font-weight:600;margin-bottom:4px;">${item.title}</div>
+            <div class="news-meta">${item.desc}</div>
+        </li>
+    `).join('');
+    newsList.innerHTML = items;
 }
 
 function degreesToCardinal(degrees) {
