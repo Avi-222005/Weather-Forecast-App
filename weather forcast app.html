@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather Forecast</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.clean.css" />
+    </head>
+    <body>
+    <!-- Weather visual layers (kept hidden by JS to preserve static gradient) -->
+    <div class="weather-layer clouds" id="clouds-layer" style="display:none"></div>
+    <div class="weather-layer rain" id="rain-layer" style="display:none"></div>
+    <div class="weather-layer snow" id="snow-layer" style="display:none"></div>
+    <div class="weather-layer mist" id="mist-layer" style="display:none"></div>
+    <div class="weather-layer lightning" id="lightning-layer" style="display:none">
+        <div class="lightning-flash" id="lightning-flash"></div>
+    </div>
+
+    <!-- Auth (centered card) -->
+    <div id="auth-wrapper">
+        <div id="auth-card" class="auth-card" aria-live="polite">
+            <h2 class="auth-title text-5xl md:text-6xl font-extrabold tracking-tight">SkyCast</h2>
+            <div id="auth-forms">
+                <form id="signup-form" class="auth-form" autocomplete="off" aria-labelledby="signup-heading">
+                    <h3 id="signup-heading">Sign Up</h3>
+                    <label>Email
+                        <input type="email" id="signup-email" required placeholder="you@example.com" autocomplete="email" />
+                    </label>
+                    <label>Password
+                        <input type="password" id="signup-password" required minlength="6" placeholder="••••••" autocomplete="new-password" />
+                    </label>
+                    <button type="submit" id="signup-btn">Create Account</button>
+                    <p class="switch-auth">Already have an account? <a href="#" id="to-login">Log in</a></p>
+                </form>
+                <form id="login-form" class="auth-form" autocomplete="off" aria-labelledby="login-heading" style="display:none">
+                    <h3 id="login-heading">Log In</h3>
+                    <label>Email
+                        <input type="email" id="login-email" required placeholder="you@example.com" autocomplete="email" />
+                    </label>
+                    <label>Password
+                        <input type="password" id="login-password" required minlength="6" placeholder="••••••" autocomplete="current-password" />
+                    </label>
+                    <button type="submit" id="login-btn">Log In</button>
+                    <p class="switch-auth">Need an account? <a href="#" id="to-signup">Sign up</a></p>
+                </form>
+            </div>
+            <div id="auth-error" class="auth-error" role="alert" style="display:none"></div>
+        </div>
+    </div>
+
+    <!-- Protected three-column layout -->
+    <div id="protected-content" style="display:none">
+        <div class="layout-shell">
+            <!-- Left Column: Saved Locations (outside app-container) -->
+            <aside id="saved-column" class="sidebar card" aria-labelledby="saved-title">
+                <div class="sidebar-header">
+                    <h2 id="saved-title">Saved Locations</h2>
+                    <button id="saved-clear" class="btn small" title="Clear all saved locations">Clear All</button>
+                </div>
+                <div id="saved-empty" class="sidebar-empty" style="display:none">No saved locations.</div>
+                <ul id="saved-list" class="sidebar-list" aria-live="polite"></ul>
+                <button id="saved-add" class="fab-add" title="Add location" aria-label="Add location">+</button>
+            </aside>
+
+            <!-- Center Column: Main Weather UI -->
+            <div id="app-container">
+                <header class="hero">
+                    <div class="hero-icon" aria-hidden="true">⛅</div>
+                    <h1 class="hero-title">SkyCast</h1>
+                    <p class="hero-subtitle">Realtime weather at your fingertips</p>
+                    <button id="logout-btn" class="logout-btn" aria-label="Log out" title="Log out" style="display:none">Log Out</button>
+                </header>
+
+                <section class="search-card" aria-labelledby="search-title">
+                    <h2 id="search-title" class="sr-only">Search weather by city or your current location</h2>
+                    <div class="input-group">
+                        <div class="input-wrapper">
+                            <span class="leading-icon" aria-hidden="true">🔍</span>
+                            <input type="text" id="city-input" placeholder="Search city (e.g., Mumbai)" aria-label="City name" />
+                        </div>
+                        <button id="search-button" class="btn btn-primary search-btn" type="button" aria-label="Search weather by city">Search</button>
+                        <button id="location-button" class="btn btn-secondary location-btn" type="button" aria-label="Use current location">Current Location</button>
+                    </div>
+                    <p class="help-text">Tip: Press Enter to search • Or use your current location</p>
+                </section>
+
+                <div id="loading-indicator" role="status" aria-live="polite">Loading weather data...</div>
+                <div id="error-message" role="alert"></div>
+
+                <div id="weather-info">
+                    <div class="weather-left weather-card card">
+                        <h2 id="location-name"></h2>
+                        <p id="temperature"></p>
+                        <p id="weather-description"></p>
+                        <div class="details-grid">
+                            <div class="detail-item">
+                                <span>Wind Speed</span>
+                                <strong id="wind-speed"></strong>
+                            </div>
+                            <div class="detail-item">
+                                <span>Wind Direction</span>
+                                <strong id="wind-direction"></strong>
+                            </div>
+                            <div class="detail-item">
+                                <span>Current Time</span>
+                                <strong id="current-time"></strong>
+                            </div>
+                            <div class="detail-item">
+                                <span>Day/Night</span>
+                                <strong id="day-night"></strong>
+                            </div>
+                        </div>
+                    </div>
+                    <aside class="aqi-card card" id="aqi-card" aria-live="polite">
+                        <div class="aqi-title">AQI</div>
+                        <div class="aqi-value" id="aqi-value">—</div>
+                        <div class="aqi-category" id="aqi-category"></div>
+                    </aside>
+                </div>
+
+                <div id="weekly-forecast">
+                    <h3 class="forecast-title">Weekly Forecast</h3>
+                    <div id="forecast-container"></div>
+                </div>
+
+                <section id="news-section" class="news-card" aria-labelledby="news-title">
+                    <div class="news-header">
+                        <h2 id="news-title">Weather News</h2>
+                        <button id="news-refresh" class="news-refresh-btn" aria-label="Refresh weather news">↻ Refresh</button>
+                    </div>
+                    <div id="news-loading" class="news-loading" role="status" aria-live="polite" style="display:none">Loading latest weather news...</div>
+                    <div id="news-error" class="news-error" role="alert" style="display:none"></div>
+                    <ul id="news-list" class="news-list" aria-live="polite"></ul>
+                </section>
+            </div><!-- /app-container (center) -->
+
+            <!-- Right Column: Search History (outside app-container) -->
+            <aside id="history-section" class="sidebar card" aria-labelledby="history-title">
+                <div class="sidebar-header">
+                    <h2 id="history-title">Search History</h2>
+                    <div class="history-actions">
+                        <button id="history-refresh" class="btn small" aria-label="Refresh history">Refresh</button>
+                        <button id="history-clear" class="btn small danger" aria-label="Clear all history">Clear All</button>
+                    </div>
+                </div>
+                <div id="history-empty" class="sidebar-empty" style="display:none">No searches yet.</div>
+                <ul id="history-list" class="sidebar-list" aria-live="polite"></ul>
+            </aside>
+        </div><!-- /layout-shell -->
+    </div><!-- /protected-content -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="auth.js"></script>
+    <script src="app.js"></script>
+    </body>
+    </html>
